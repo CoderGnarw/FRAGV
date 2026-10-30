@@ -1,5 +1,20 @@
 [
  {
+  "v": "1.0.16",
+  "t": "Gunfire check, \"maybe\" clips, post-check & accuracy",
+  "d": "30 October 2026",
+  "items": [
+   "+ Gunfire detection: FRAG//V listens to the FiveM audio for shots; kill evidence with no gunfire nearby is held (your name in the kill feed still counts for melee and vehicle kills)",
+   "+ \"Maybe\" clips: likely but uncertain kills are saved with a MAYBE tag; keep or discard them in My Clips, the rest are deleted automatically after 6 h, 24 h or 3 days",
+   "+ Post-check: every saved auto clip is analysed again around the kill and marked VERIFIED or UNSURE; verified \"maybe\" clips become normal clips",
+   "+ Detection Accuracy card on the Dashboard: precision, kills caught, post-check results and maybe-clip stats from your ✓/✗ feedback",
+   "+ Watched Monitor shows the gunfire gate status and when the last shot was heard",
+   "+ \"Maybe\" filter in My Clips",
+   "+ Settings: Require gunfire for auto clips, \"Maybe\" clips with auto-delete time",
+   "/ Labelling a \"maybe\" clip trains the detector the same way as ✓ / ✗ feedback"
+  ]
+ },
+ {
   "v": "1.0.15",
   "t": "Smarter kill detection: gameplay gates, your name, feedback",
   "d": "30 October 2026",
