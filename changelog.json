@@ -1,5 +1,19 @@
 [
  {
+  "v": "1.0.17",
+  "t": "Auto detection works minimized and in the background",
+  "d": "30 October 2026",
+  "items": [
+   "+ Background-safe detection feed: detection now gets its own DXGI capture of your monitor (bundled FFmpeg), independent of the FRAG//V window",
+   "+ Settings → Kill Detection: \"Background-safe detection\" toggle (on by default)",
+   "+ Watched Monitor and Dashboard show which detection input is used and its frame rate",
+   "+ Detection Log warns when auto detection stops receiving frames",
+   "/ Auto detection keeps working while FRAG//V is minimized, in the tray or behind FiveM (single-monitor setups)",
+   "/ Clip thumbnails and training snapshots also come from the background feed, so they no longer freeze while the window is hidden",
+   "/ The feed restarts by itself after display mode changes or fullscreen switches"
+  ]
+ },
+ {
   "v": "1.0.16",
   "t": "Gunfire check, \"maybe\" clips, post-check & accuracy",
   "d": "30 October 2026",
