@@ -1,5 +1,20 @@
 [
  {
+  "v": "1.0.18",
+  "t": "Performance: lighter detection, no FPS drop when saving",
+  "d": "30 October 2026",
+  "items": [
+   "+ Fast save: clips from the native recorder are saved without re-encoding the video (stream copy), so saving no longer costs GPU/CPU while you play; the clip may start up to 2 s earlier",
+   "+ Settings → Video: \"Fast save\" toggle (on by default; off = exact frame-accurate cut, re-encoded)",
+   "/ Clip saving, Discord copies and post-checks run at below-normal priority with limited threads, so the game keeps its CPU time",
+   "/ Text recognition (the heaviest detector) only runs around action: gunfire, a kill-X candidate or new kill-feed rows, plus a slow check every 8 s",
+   "/ Kill-X detector skips frames without red near the crosshair after a quick check of the centre instead of analysing the whole crop",
+   "/ Background detection feed runs at 20 fps instead of 30",
+   "/ The window's own screen capture drops to 2 fps while FRAG//V is hidden or not on Watched Monitor (native recorder)",
+   "/ Waiting for FiveM / Discord audio checks the process list every 5 s instead of every 1.4 s; audio meters only update on the Audio Tracks page"
+  ]
+ },
+ {
   "v": "1.0.17",
   "t": "Auto detection works minimized and in the background",
   "d": "30 October 2026",
