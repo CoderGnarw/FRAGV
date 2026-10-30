@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FRAG//V — Free FiveM Kill Clips</title>
+<meta name="description" content="FRAG//V automatically clips your FiveM / GTA V kills. Free forever, no account, no cloud, nothing injected into the game. Windows 10/11.">
+<meta name="theme-color" content="#07070c">
+<meta property="og:title" content="FRAG//V — Free FiveM Kill Clips">
+<meta property="og:description" content="Your FiveM kills, clipped automatically. Free, local, external-only.">
+<meta property="og:image" content="/img/app-dashboard.webp">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bgfx"></div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="./"><img src="img/logo.png" alt="" width="36" height="36"><b>FRAG//V</b></a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#safety">Safety</a>
+      <a href="#changelog">Changelog</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn sm primary dl" href="#" data-dl>Download</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill"><i></i>v__VERSION__ is out · <a href="#changelog">What's new →</a></span>
+      <h1>Your FiveM kills,<br><span class="grad">clipped automatically.</span></h1>
+      <p class="lead">FRAG//V keeps a replay buffer of your game and saves the seconds around every kill as a clip. Free forever. No account, no cloud, no ads, nothing injected into GTA V.</p>
+      <div class="cta">
+        <a class="btn big primary" href="#" data-dl>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+          Download for Windows
+        </a>
+        <a class="btn big" href="#how">How it works</a>
+      </div>
+      <p class="meta"><b>v__VERSION__</b> · Windows 10 (2004+) / 11 · 64-bit · free</p>
+      <div class="shot reveal"><img src="img/app-dashboard.webp" alt="FRAG//V dashboard with auto kill clips, replay buffer and recent clips" width="2010" height="1320"></div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="head c reveal">
+        <div class="kicker">Features</div>
+        <h2>Built for one thing: <span class="grad">your frags</span></h2>
+        <p class="sub">A lightweight clipper made specifically for FiveM, instead of a general-purpose app that does everything.</p>
+      </div>
+      <div class="grid">
+        <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><h3>Automatic kill detection</h3><p>Watches the centre of your screen for GTA V's red kill-X, backed up by the kill feed and text recognition. Confirmed kills are clipped on their own.</p></div>
+        <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 12h3l3-7 4 14 3-7h5"/></svg></div><h3>Replay buffer</h3><p>The last moments are always recorded. A clip includes 30 s before the kill and 8 s after by default, and you can adjust both.</p></div>
+        <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h2M7 14h10"/></svg></div><h3>Hotkey, button or tray</h3><p>Press <kbd>F9</kbd> (or your own hotkey), hit Clip Now, or use the tray menu. Manual clips always work, even with auto detection off.</p></div>
+        <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg></div><h3>Four audio tracks + mix</h3><p>Game, microphone, desktop and Discord each go on their own track, plus a mixed track first so every player and Discord plays your voice.</p></div>
+        <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></div><h3>GPU recording</h3><p>Uses NVIDIA NVENC, Intel Quick Sync or AMD AMF to record with almost no FPS cost. If no GPU encoder is available, it falls back to the CPU.</p></div>
+        <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/></svg></div><h3>Your clips stay yours</h3><p>MP4 files saved to your own <code>Videos\FRAGV</code> folder. Built-in player and library. Optional sharing to your Discord webhook, nothing else.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div class="txt reveal">
+        <div class="kicker">Detection</div>
+        <h2>Knows when it's a <span class="grad">real kill</span></h2>
+        <p class="sub">Several independent signals are combined and checked against your sensitivity before a clip is saved.</p>
+        <ul class="ticks">
+          <li><span><b>Centre kill-X:</b> the four red tick marks GTA V shows around your crosshair.</span></li>
+          <li><span><b>Kill feed + your name:</b> a new feed line starting with your player name counts as strong evidence.</span></li>
+          <li><span><b>Gameplay check:</b> detection pauses when FiveM isn't the active window, and on loading screens, the pause menu or the map.</span></li>
+          <li><span><b>Multi-kills:</b> another kill during the clip adds 5 s to the same clip.</span></li>
+        </ul>
+      </div>
+      <div class="frame reveal"><img src="img/app-detect.webp" alt="Kill detection settings: sensitivity, recognition methods, multi-kill extension" width="1464" height="620" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split rev">
+      <div class="txt reveal">
+        <div class="kicker">Audio</div>
+        <h2>Hear yourself <span class="grad">in every clip</span></h2>
+        <p class="sub">The mixed track comes first, so Windows players, Discord and phones play game sound and voice together. The separate tracks stay in the file for editing.</p>
+      </div>
+      <div class="frame reveal"><img src="img/app-mix.webp" alt="Mixed audio track setting" width="1573" height="260" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="head c reveal">
+        <div class="kicker">How it works</div>
+        <h2>Set up in <span class="grad">two minutes</span></h2>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><h3>Install</h3><p>Download and run the installer. If SmartScreen appears, click <b>More info → Run anyway</b> (FRAG//V isn't code-signed yet).</p></div>
+        <div class="step reveal"><h3>Pick your monitor</h3><p>Choose the monitor you play FiveM on. The replay buffer starts, and there are no regions to draw.</p></div>
+        <div class="step reveal"><h3>Play</h3><p>Turn on Auto Kill Clips or use your hotkey. Your clips show up in My Clips, ready to watch, trim or share.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="safety">
+    <div class="wrap">
+      <div class="band reveal">
+        <div class="kicker">External-only</div>
+        <h2>It never touches <span class="grad">your game</span></h2>
+        <p class="sub">FRAG//V works like a screen recorder: it only sees your monitor and hears your audio.</p>
+        <ul class="nolist">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#2ee59d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b>No injection</b> into FiveM or GTA V</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#2ee59d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b>No memory reading</b> and no modified game files</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#2ee59d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b>No FiveM resources</b>, events or APIs</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#2ee59d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg><span><b>Never sends input</b> or data to the game</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <div class="wrap">
+      <div class="head c reveal">
+        <div class="kicker">Why FRAG//V</div>
+        <h2>Clipping without <span class="grad">strings attached</span></h2>
+        <p class="sub">A free, local alternative to all-in-one clipping platforms.</p>
+      </div>
+      <table class="compare reveal">
+        <thead><tr><th>What you get</th><th>FRAG//V</th></tr></thead>
+        <tbody>
+          <tr><td>Price</td><td class="yes">Free forever</td></tr>
+          <tr><td>Account required</td><td class="yes">No</td></tr>
+          <tr><td>Ads or paid tiers</td><td class="yes">None</td></tr>
+          <tr><td>Where clips are stored</td><td class="yes">Your PC only</td></tr>
+          <tr><td>Uploads</td><td class="yes">Only to your own Discord webhook, if you set one up</td></tr>
+          <tr><td>Made for</td><td class="yes">FiveM / GTA V kills</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="changelog">
+    <div class="wrap">
+      <div class="head c reveal">
+        <div class="kicker">Changelog</div>
+        <h2>Always <span class="grad">getting better</span></h2>
+      </div>
+      <div id="rels" style="max-width:860px;margin:0 auto"></div>
+      <div class="more"><button class="btn sm" id="moreRels">Show all releases</button></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="head c reveal">
+        <div class="kicker">FAQ</div>
+        <h2>Questions</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Is FRAG//V really free?</summary><p>Yes. No price, no ads, no premium version and no account. It's a hobby project.</p></details>
+        <details><summary>Windows says "Windows protected your PC". Is that safe?</summary><p>FRAG//V isn't signed with a paid code-signing certificate yet, so SmartScreen doesn't recognise it. Click <b>More info → Run anyway</b>. Only download FRAG//V from this website.</p></details>
+        <details><summary>Can I get banned for using it?</summary><p>FRAG//V works like OBS or any screen recorder: it never injects into the game, reads its memory or talks to FiveM. Server rules are up to each server, though, so check them if you're unsure.</p></details>
+        <details><summary>Does it upload my clips anywhere?</summary><p>No. Clips are saved to your own PC. The only upload is the optional Discord webhook, which you set up yourself.</p></details>
+        <details><summary>What do I need to run it?</summary><p>64-bit Windows 10 (version 2004 or newer) or Windows 11. An NVIDIA, Intel or AMD GPU gives the best performance. The first start needs internet once to download the text-recognition data.</p></details>
+        <details><summary>Which languages does kill detection understand?</summary><p>The kill-X works on any server. Kill feed and text recognition read English and German.</p></details>
+        <details><summary>How do I update?</summary><p>Download the latest installer here and run it. It installs over the old version and keeps your settings and clips.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap reveal">
+      <img src="img/logo.png" alt="" width="84" height="84">
+      <h2>Ready to <span class="grad">frag</span>?</h2>
+      <p class="sub" style="margin:0 auto 30px">Free download for Windows 10 and 11.</p>
+      <a class="btn big primary" href="#" data-dl>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+        Download FRAG//V v__VERSION__
+      </a>
+      <p class="meta" id="dlNote">Installer from GitHub Releases · no account needed</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>FRAG//V · Coded by <span class="gn">Gnarw</span></span>
+    <span class="sp"></span>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <span>Not affiliated with Rockstar Games, Take-Two or Cfx.re.</span>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+const { GITHUB_OWNER, GITHUB_REPO } = window.FRAGV_CONFIG;
+const CHANGELOG = __CHANGELOG__;
+
+const releasesPage = `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
+document.querySelectorAll('[data-dl]').forEach((a) => {
+  a.href = releasesPage;
+  a.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const note = document.getElementById('dlNote');
+    // Only contacts GitHub when someone actually clicks Download (no third-party request on page load).
+    try {
+      const r = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } });
+      if (!r.ok) throw new Error(r.status);
+      const rel = await r.json();
+      const exe = (rel.assets || []).find((x) => /\.exe$/i.test(x.name));
+      if (!exe) throw new Error('no exe');
+      note.textContent = `Downloading ${exe.name} (${(exe.size / 1048576).toFixed(0)} MB). If SmartScreen appears: More info → Run anyway.`;
+      location.href = exe.browser_download_url;
+    } catch (_) {
+      location.href = releasesPage;
+    }
+  });
+});
+
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const tagOf = { '+': ['a', 'NEW'], '/': ['c', 'CHG'], '-': ['r', 'DEL'] };
+function renderRels(all) {
+  const list = all ? CHANGELOG : CHANGELOG.slice(0, 3);
+  document.getElementById('rels').innerHTML = list.map((r, i) => `
+    <details class="rel"${i === 0 ? ' open' : ''}>
+      <summary><span class="v">v${esc(r.v)}</span><span class="t">${esc(r.t)}</span><span class="d">${esc(r.d)}</span></summary>
+      <ul>${r.items.map((it) => { const [c, l] = tagOf[it[0]] || tagOf['/']; return `<li><span class="tag ${c}">${l}</span><span>${esc(it.slice(2))}</span></li>`; }).join('')}</ul>
+    </details>`).join('');
+  document.getElementById('moreRels').hidden = all || CHANGELOG.length <= 3;
+}
+renderRels(false);
+document.getElementById('moreRels').onclick = () => renderRels(true);
+
+const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 }) : null;
+document.querySelectorAll('.reveal').forEach((el) => (io ? io.observe(el) : el.classList.add('in')));
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+[
+ {
+  "v": "1.0.15",
+  "t": "Smarter kill detection: gameplay gates, your name, feedback",
+  "d": "30 October 2026",
+  "items": [
+   "+ Detection only runs while FiveM / GTA V is the active window (setting, on by default)",
+   "+ Black and loading screens pause detection; pause menu, big map and cutscenes (HUD/minimap gone) pause text detection while the kill-X keeps watching",
+   "+ Watched Monitor chip and dashboard Status show whether detection is live or paused, and why",
+   "+ \"Your player name\" setting: a new kill-feed line starting with your name is strong kill evidence; your name as the victim holds auto clips for 4 s",
+   "+ ✓ Yes / ✗ No feedback on auto and manual clips (cards and player)",
+   "+ Training samples: every auto kill and manual clip saves the last 3 s of centre crops, a frame and the evidence scores, plus a settings toggle, stats and Open folder button",
+   "+ Developer tools: scripts/calibrate-clips.js replays clips through the kill-X detector; scripts/test-gate.js replays them through the gameplay gate",
+   "/ False multi-kill clips fixed at the root: full-screen OCR was reading kill words from other windows (e.g. a console) while FiveM wasn't in front",
+   "/ Kill fusion adds +18 when your name is in the feed alongside other evidence"
+  ]
+ },
+ {
+  "v": "1.0.14",
+  "t": "Mixed audio track, clip resolution & playback fixes",
+  "d": "28 October 2026",
+  "items": [
+   "+ Mix (All Audio) as track 1 so voice and game sound play everywhere; T1–T4 stay as separate tracks after it",
+   "+ Audio Tracks toggle \"Mixed track first\" (on by default)",
+   "+ MIX badge on clip cards that contain the mixed track",
+   "+ Detection Log lists every native encoder candidate that was rejected and why",
+   "/ Clips are always saved at the selected resolution; a 1440p monitor no longer leaks into 1080p clips",
+   "/ Native recorder tries D3D11 scaling without a forced format and a CPU-scaled NVENC path before falling back to native size",
+   "/ Built-in player streams clips straight from disk and pauses the hidden live preview, so playback is smooth",
+   "/ Discord copies reuse the mixed track instead of mixing the separate tracks again",
+   "/ Version label in the sidebar footer uses the accent colour",
+   "/ Changelog entries are grouped as Added, Changed, Removed"
+  ]
+ },
+ {
+  "v": "1.0.13",
+  "t": "Center red kill-X recognition rebuild",
+  "d": "27 October 2026",
+  "items": [
+   "+ Subtle neon glow pulse on accent buttons and an animated logo when hovering the sidebar brand",
+   "+ Rebuilt centre red kill-X detector scoring four diagonal tick arms (NW, NE, SW, SE) separately",
+   "+ Candidate centres from the white reticle dot, a frame-centre grid, the red centroid and the red bounding box",
+   "+ Radius search at 4.5–19.5% of the 192 px crop plus radii estimated from the nearby red bounding box",
+   "+ Perpendicular probing for widened GTA ticks that are not one-pixel diagonals",
+   "+ Penalties for cardinal-direction red, red in the centre, solid red regions, arm imbalance and off-centre candidates",
+   "+ Two-frame early trigger while the X is still visible, with disarm until three clear frames",
+   "+ Static scenery/HUD rejection after 1.4 s and near-miss logging at most once every 15 s",
+   "/ New FRAG//V logo in the app, tray, taskbar, installer, uninstaller and shortcuts",
+   "/ \"Gnarw\" credit shown in the accent colour; sidebar tab labels are brighter and easier to read",
+   "/ Watched Monitor preview now fits the window height instead of filling the full width",
+   "/ Audio Tracks rebuilt as a symmetrical grid that reflows cleanly when the window is narrow",
+   "/ In-Game and Discord capture use the real loopback-capture API and recognise FiveM_bXXXX_GTAProcess.exe",
+   "/ Discord uploads attach a mixed-audio copy fitted to the server limit (24 MB, then 10 MB) and report message-only posts honestly",
+   "/ Detection Log labels now list arm coverage in NW/NE/SW/SE order",
+   "/ A clear centre red X (peak ≥ 80) now confirms without kill-feed or CitizenFX.log corroboration",
+   "- Silent per-app tracks are no longer written (they made clips sound mute in players that only play track 1)",
+   "- Removed 22.5° intermediate directions as negative controls (they hit the wide outer ends of real ticks)"
+  ]
+ },
+ {
+  "v": "1.0.12",
+  "t": "Native DXGI GPU recording",
+  "d": "18 October 2026",
+  "items": [
+   "+ Native Windows Desktop Duplication recorder (FFmpeg ddagrab) in the main process",
+   "+ D3D11 scaling with NVENC, QuickSync, AMF, Media Foundation and libx264 encoder fallbacks",
+   "+ 2-second MPEG-TS segments, 150-second retention and protection for in-progress clips",
+   "+ Automatic fallback to the WebCodecs recorder when every native candidate fails",
+   "/ Bundled modern FFmpeg with ddagrab, scale_d3d11, NVENC, QuickSync, AMF and Media Foundation",
+   "/ Preview and detection capped to 1280×720 at 30 FPS while native recording is active",
+   "- Removed the old @ffmpeg-installer/win32-x64 4.1.0 binary"
+  ]
+ },
+ {
+  "v": "1.0.11",
+  "t": "Validated clip assembly",
+  "d": "9 October 2026",
+  "items": [
+   "+ Clip validation: size, encoded frames, video stream, readable packets, start/middle/late decode and timeline length",
+   "+ MPEG-TS normalisation retry with black/silent replacement for undecodable segments",
+   "+ Player warning when a saved file has no playable video track",
+   "/ Legacy Chromium MP4 segments decoded with -auto_convert 0 so video is no longer silently dropped",
+   "/ Final MP4s carry BT.709 TV-range colour metadata and fast-start"
+  ]
+ },
+ {
+  "v": "1.0.10",
+  "t": "Per-app audio",
+  "d": "30 September 2026",
+  "items": [
+   "+ WASAPI process-loopback capture for In-Game (FiveM) and Discord tracks",
+   "+ Process-tree resolution that prefers GTA5.exe / FiveM_GTAProcess.exe and follows restarts",
+   "+ 120-second PCM ring with exact silence for missing intervals",
+   "/ FiveM and Discord meters now move independently from their own captures",
+   "- Removed the Desktop-audio copy that stood in for In-Game audio"
+  ]
+ },
+ {
+  "v": "1.0.9",
+  "t": "CitizenFX.log & German OCR",
+  "d": "21 September 2026",
+  "items": [
+   "+ Optional read-only CitizenFX.log watcher (citizenlog method)",
+   "+ German OCR model and default German keywords, including “du hast [name] getötet”",
+   "+ [name], [player] and [spieler] wildcards and diacritic-folded matching",
+   "/ Naked onPlayerKilled lines are classified as ambiguous, not as your kill"
+  ]
+ },
+ {
+  "v": "1.0.8",
+  "t": "Evidence fusion",
+  "d": "12 September 2026",
+  "items": [
+   "+ 3.5-second evidence window fusing marker, kill-feed, OCR and log evidence",
+   "+ OCR phrases must reappear on a later scan before they count",
+   "/ Sensitivity now applies to the fused confidence",
+   "- Removed the single-frame red-pixel trigger"
+  ]
+ },
+ {
+  "v": "1.0.7",
+  "t": "WebCodecs recorder",
+  "d": "3 September 2026",
+  "items": [
+   "+ WebCodecs H.264 recorder with a frame pump and mp4-muxer segments",
+   "+ Encoder backpressure and automatic capture step-down below 72% of target FPS",
+   "/ MediaRecorder kept as the last fallback"
+  ]
+ },
+ {
+  "v": "1.0.6",
+  "t": "Background recording",
+  "d": "25 August 2026",
+  "items": [
+   "+ Tray icon with Open, Clip Now and Quit; closing the window hides to the tray",
+   "+ Power-save blocker while capture is active",
+   "/ Background throttling disabled at every layer",
+   "/ Detection reads cloned capture-track frames instead of the preview video"
+  ]
+ },
+ {
+  "v": "1.0.5",
+  "t": "Library tools",
+  "d": "16 August 2026",
+  "items": [
+   "+ Multi-select, Select All for visible clips and a neon bulk-delete button",
+   "+ Search, filters, sorting and a local storage bar",
+   "/ Custom clip player with seek, volume and Escape to close"
+  ]
+ },
+ {
+  "v": "1.0.4",
+  "t": "Auto Upload",
+  "d": "7 August 2026",
+  "items": [
+   "+ Discord webhook delivery and Send Test",
+   "+ Instagram and TikTok targets, clearly labelled as simulated",
+   "+ Per-platform upload progress and uploaded badges"
+  ]
+ },
+ {
+  "v": "1.0.3",
+  "t": "Four audio tracks",
+  "d": "29 July 2026",
+  "items": [
+   "+ Separate In-Game, Microphone, Desktop and Discord MP4 audio tracks with titles and handler names",
+   "+ Raw microphone capture without echo cancellation, noise suppression or automatic gain",
+   "/ Choosing a microphone in Audio Tracks connects it immediately"
+  ]
+ },
+ {
+  "v": "1.0.2",
+  "t": "Hotkey & clip timing",
+  "d": "20 July 2026",
+  "items": [
+   "+ Rebindable global clip hotkey (default F9) with 800 ms debounce",
+   "+ Multi-kill extension and detection cooldown",
+   "/ Pre-kill range 10–60 s and post-kill range 5–15 s"
+  ]
+ },
+ {
+  "v": "1.0.1",
+  "t": "Clean start",
+  "d": "11 July 2026",
+  "items": [
+   "/ Automatic kill clipping now starts disabled",
+   "/ Monitor selection replaces manual region marking",
+   "- Removed demo feed, sample clips, simulated kills and fake meter animation"
+  ]
+ },
+ {
+  "v": "1.0.0",
+  "t": "First release",
+  "d": "2 July 2026",
+  "items": [
+   "+ Monitor replay buffer with Clip Now and MP4 assembly",
+   "+ Dashboard, Watched Monitor, My Clips and Settings",
+   "+ Neon appearance presets with adjustable glow"
+  ]
+ }
+]
