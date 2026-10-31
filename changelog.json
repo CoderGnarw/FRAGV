@@ -1,5 +1,32 @@
 [
  {
+  "v": "1.0.20",
+  "t": "Small kill-X markers and kill notifications",
+  "d": "31 October 2026",
+  "items": [
+   "+ Magnified centre scan: a second, zoomed-in analysis of the crosshair area finds small, server-specific kill-X markers (about 3× smaller than GTA's), also next to a blood splash",
+   "+ Tolerant red: darker, washed-out kill-X reds (graphics mods, bloom, thin lines) are recognised; brick walls, skin, red cars, neon stripes, circles and plus signs still don't trigger",
+   "+ Kill notifications: a new green notification on the left is spotted within 0.2 s and read at once from an enlarged crop; \"Du hast [Name | ID] getötet\" / \"You killed …\" is strong kill evidence on its own",
+   "+ Death notifications: a new red \"Du wurdest von [Name | ID] getötet\" / \"You were killed by …\" message holds auto clips for 4 s",
+   "/ Kill messages are recognised even when they wrap onto two lines or OCR misreads letters (e.g. \"Du host … getdtet\")",
+   "/ Kill messages count as strong evidence for the gunfire check (like your name in the kill feed)",
+   "/ The background detection feed captures at up to 1600 px for the sharper magnified scan; the post-check uses both scans"
+  ]
+ },
+ {
+  "v": "1.0.19",
+  "t": "Kill detection with graphics mods (NVE, ReShade, colour filters)",
+  "d": "31 October 2026",
+  "items": [
+   "+ Kill-X colour learning: make one kill and press your clip hotkey, and FRAG//V finds the kill-X in that clip and learns its colour; it then looks for that colour as well as standard red",
+   "+ Kills confirmed by the kill feed without a visible kill-X also teach the colour automatically",
+   "+ Red-heavy scenes: red signs, red lighting and colour grading behind the crosshair are filtered out, so a kill-X on top of them is still found",
+   "+ Settings → Kill Detection: \"Kill-X colour (graphics mods)\" with the learned colour, a Reset button and an on/off toggle",
+   "/ The post-check of saved clips uses the same colour handling as live detection",
+   "/ Training samples record the learned kill-X colour"
+  ]
+ },
+ {
   "v": "1.0.18",
   "t": "Performance: lighter detection, no FPS drop when saving",
   "d": "30 October 2026",
