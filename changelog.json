@@ -1,5 +1,17 @@
 [
  {
+  "v": "1.0.21",
+  "t": "Performance for low-end PCs",
+  "d": "31 October 2026",
+  "items": [
+   "+ Low-end PC mode (Settings → Video → Performance mode, Auto by default): on PCs with few CPU threads, little RAM, no GPU video encoder or CPU recording, detection captures 10 instead of 20 fps and full-screen text recognition is off (kill feed and kill notifications stay on)",
+   "+ Detection rests while nothing can happen: when FiveM isn't the active window or during black/loading screens, its capture slows to 2 fps and wakes up as soon as FiveM is back",
+   "+ Warning in the Detection Log when recording falls back to the CPU, with what to do about it",
+   "/ Detection now copies only the centre area it analyses from the graphics card (native pixels) plus a small 1280×720 frame 4× per second, about 70 % less data than before",
+   "/ The recorder runs at normal instead of above-normal priority, and the detection capture below normal, so the game always comes first"
+  ]
+ },
+ {
   "v": "1.0.20",
   "t": "Small kill-X markers and kill notifications",
   "d": "31 October 2026",
