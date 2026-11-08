@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lucky Wheel — FRAG//V</title>
+<meta name="description" content="Free lucky wheel for FiveM giveaways: enter names, tickets and prizes, then spin and draw the winners. Runs entirely in your browser.">
+<meta name="theme-color" content="#07070c">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+<style>
+  .nav nav a.on{color:#fff;background:var(--panel)}
+  .wrapw{max-width:1280px;margin:0 auto;padding:0 24px}
+  @media (max-width:600px){.wrapw{padding:0 16px}}
+  .whead{padding:44px 0 26px}
+  .whead h1{font:800 clamp(34px,5vw,54px)/1.05 var(--display);margin:10px 0 10px}
+  .whead p{color:var(--muted);margin:0;max-width:720px;font-size:16.5px}
+  .steps2{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+  .st{display:flex;align-items:center;gap:8px;font:700 13px/1 var(--font);color:var(--dim);padding:8px 12px;border-radius:999px;border:1px solid var(--line)}
+  .st b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--panel2);color:var(--muted);font-size:11px}
+  .st.on{color:#fff;border-color:color-mix(in srgb,var(--acc) 50%,var(--line))}
+  .st.on b{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+  .st.done b{background:var(--ok);color:#06140d}
+
+  /* setup */
+  .setup{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}
+  @media (max-width:900px){.setup{grid-template-columns:1fr}}
+  .box{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:22px}
+  .box h2{font:800 20px/1.2 var(--display);margin:0 0 4px}
+  .box .sub2{color:var(--muted);font-size:14px;margin:0 0 14px}
+  textarea.in{width:100%;min-height:330px;resize:vertical;background:#0b0b14;border:1px solid var(--line2);border-radius:12px;color:var(--text);
+    font:14px/1.6 var(--mono);padding:14px;outline:none;transition:border-color .15s}
+  textarea.in:focus{border-color:color-mix(in srgb,var(--acc) 60%,var(--line2))}
+  .meta2{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--muted)}
+  .chip2{padding:5px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}
+  .chip2 b{color:var(--text)}
+  .warn2{color:#ffb020}
+  .bar2{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:18px;padding:18px 22px;border-radius:16px;border:1px solid var(--line);background:var(--panel)}
+  .bar2 .info{color:var(--muted);font-size:14px}
+  .bar2 .info b{color:var(--text)}
+  .btn[disabled]{opacity:.45;pointer-events:none;animation:none}
+  .resume{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px;padding:14px 18px;border-radius:14px;
+    border:1px solid color-mix(in srgb,var(--acc2) 45%,var(--line));background:color-mix(in srgb,var(--acc2) 9%,var(--panel))}
+
+  /* draw */
+  .kp{display:flex;gap:10px;flex-wrap:wrap}
+  .side .kp{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kpi2{min-width:104px;padding:10px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+  .kpi2 .v{font:800 24px/1 var(--display)}
+  .kpi2 .k{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+  .kpi2.a .v{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .drawtop{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .drawgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+  @media (max-width:1000px){.drawgrid{grid-template-columns:1fr}}
+  .stage{background:radial-gradient(70% 60% at 50% 40%,color-mix(in srgb,var(--acc2) 12%,transparent),transparent 70%),var(--panel);
+    border:1px solid var(--line);border-radius:20px;padding:22px 18px 26px;text-align:center}
+  .banner2{min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin-bottom:14px}
+  .banner2 .lbl{font:700 12px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+  .banner2 .nm{font:800 clamp(28px,4.6vw,48px)/1.1 var(--display);word-break:break-word}
+  .banner2 .pz{font:700 18px/1.3 var(--font);color:var(--muted);min-height:24px}
+  .banner2.win .lbl{color:var(--acc)}
+  .banner2.win .nm{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+  .banner2.win .pz{color:#fff}
+  .pz.rolling{color:var(--muted) !important;filter:blur(.4px)}
+  @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}}
+  .wheelbox{position:relative;width:min(100%,calc(100vh - 330px),680px);min-width:min(100%,300px);margin:0 auto;aspect-ratio:1}
+  .wheelbox svg{width:100%;height:100%;display:block;filter:drop-shadow(0 26px 60px color-mix(in srgb,var(--acc) 30%,transparent))}
+  .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:23%;aspect-ratio:1;border-radius:50%;border:0;cursor:pointer;
+    font:800 clamp(13px,2.1vw,19px)/1.1 var(--display);letter-spacing:.04em;color:#fff;
+    background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 0 0 6px #0b0b14,0 0 0 8px color-mix(in srgb,var(--acc) 50%,transparent),0 10px 40px -6px color-mix(in srgb,var(--acc) 80%,transparent);
+    transition:transform .15s, filter .15s}
+  .hub:hover{transform:translate(-50%,-50%) scale(1.04);filter:brightness(1.08)}
+  .hub:disabled{cursor:default;filter:grayscale(.4) brightness(.8);transform:translate(-50%,-50%)}
+  .hub.done{background:linear-gradient(135deg,#21c07a,#1a9e8f)}
+  .ctl2{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px;min-height:46px}
+  .side{display:grid;gap:16px}
+  .list2{max-height:280px;overflow:auto;margin:0;padding:0;list-style:none;display:grid;gap:6px}
+  .list2 li{display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:10px;background:#0d0d17;border:1px solid var(--line);font-size:14px}
+  .list2 li .n{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .list2 li .p{color:var(--muted);font-size:13px;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .list2 li .no{font:700 11px var(--mono);color:var(--dim);width:22px}
+  .list2 li.taken{opacity:.45;text-decoration:line-through}
+  .list2 .empty{color:var(--dim);background:none;border-style:dashed;justify-content:center}
+  .side h3{font:800 16px/1.2 var(--display);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .side h3 .ct{margin-left:auto;font:700 12px var(--mono);color:var(--dim)}
+  .sbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .hidden{display:none !important}
+  #viewSetup,#viewDraw{padding:0}
+  body.drawing .whead{padding:22px 0 14px}
+  body.drawing .whead p,body.drawing .whead h1{display:none}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+  .modal2{position:fixed;inset:0;z-index:70;display:none;place-items:center;background:rgba(4,4,10,.7);backdrop-filter:blur(4px);padding:16px}
+  .modal2.show{display:grid}
+  .modal2 .card{max-width:420px;width:100%;transform:none}
+  .modal2 .card p{margin:6px 0 18px}
+  .toast2{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);opacity:0;z-index:80;background:var(--panel2);border:1px solid var(--line2);
+    padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;transition:.25s;pointer-events:none}
+  .toast2.show{opacity:1;transform:translate(-50%,0)}
+  .note2{color:var(--dim);font-size:13px;margin:22px 0 60px}
+</style>
+</head>
+<body>
+<div class="bgfx"></div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="./"><img src="img/logo.png" alt="" width="36" height="36"><b>FRAG//V</b></a>
+    <nav>
+      <a href="./#features">Features</a>
+      <a href="./#how">How it works</a>
+      <a href="./#safety">Safety</a>
+      <a href="./#changelog">Changelog</a>
+      <a href="./#faq">FAQ</a>
+      <a href="wheel" class="on" aria-current="page">Lucky Wheel</a>
+    </nav>
+    <a class="btn sm primary" href="#" data-dl>Download</a>
+  </div>
+</header>
+
+<main class="wrapw">
+  <div class="whead">
+    <div class="kicker">Giveaway tool</div>
+    <h1>Lucky <span class="grad">Wheel</span></h1>
+    <p>Run fair giveaways for your server or community: every ticket is one field on the wheel, prizes are drawn at random, and only the winning ticket leaves the wheel. Everything stays in your browser.</p>
+    <div class="steps2"><span class="st on" id="st1"><b>1</b>Names &amp; tickets</span><span class="st" id="st2"><b>2</b>Prizes</span><span class="st" id="st3"><b>3</b>Spin &amp; draw</span></div>
+  </div>
+
+  <!-- ================= STEP 1+2: SETUP ================= -->
+  <section id="viewSetup">
+    <div class="resume hidden" id="resumeBox">
+      <span><b>Unfinished draw found</b> <span style="color:var(--muted)" id="resumeInfo"></span></span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="resumeBtn">Back to the wheel</button><button class="btn sm" id="resetAllBtn">Start over</button></span>
+    </div>
+    <div class="setup">
+      <div class="box">
+        <h2>1 · Names &amp; tickets</h2>
+        <p class="sub2">One participant per line: name, then the number of tickets (max 150 each). Without a number, it counts as 1 ticket. The same name twice adds the tickets up.</p>
+        <textarea class="in" id="inNames" spellcheck="false" placeholder="Max_Lopez, 5&#10;Lena = 3&#10;Tobi: 2&#10;Chris"></textarea>
+        <div class="meta2" id="namesMeta"></div>
+      </div>
+      <div class="box">
+        <h2>2 · Prizes</h2>
+        <p class="sub2">One prize per line. Several of the same prize: write <code>3x</code> in front. Every prize can be won once.</p>
+        <textarea class="in" id="inPrizes" spellcheck="false" placeholder="250.000$ Cash&#10;3x Custom wheels&#10;1x Garage slot&#10;Free respray"></textarea>
+        <div class="meta2" id="prizesMeta"></div>
+      </div>
+    </div>
+    <div class="bar2">
+      <span class="info" id="readyInfo">Enter at least 2 tickets and 1 prize.</span>
+      <span style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="clearBtn">Clear fields</button>
+        <button class="btn primary big" id="startBtn" disabled>Done, show the wheel →</button>
+      </span>
+    </div>
+  </section>
+
+  <!-- ================= STEP 3: WHEEL ================= -->
+  <section id="viewDraw" class="hidden">
+    <div class="drawgrid">
+      <div class="stage">
+        <div class="banner2" id="banner"><div class="lbl" id="bLbl">Ready to draw</div><div class="nm" id="bName">Good luck!</div><div class="pz" id="bPrize">Click SPIN</div></div>
+        <div class="wheelbox">
+          <svg id="wheel" viewBox="0 0 400 400" role="img" aria-label="Lucky wheel"></svg>
+          <button class="hub" id="spinBtn">SPIN</button>
+        </div>
+        <div class="ctl2">
+          <button class="btn primary hidden" id="nextBtn">Confirm &amp; spin again</button>
+          <button class="btn hidden" id="redrawBtn">Draw a different prize</button>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="kp">
+          <div class="kpi2"><div class="v" id="kPlayers">0</div><div class="k">Players</div></div>
+          <div class="kpi2 a"><div class="v" id="kTickets">0</div><div class="k">Tickets left</div></div>
+          <div class="kpi2 a"><div class="v" id="kPrizes">0</div><div class="k">Prizes left</div></div>
+          <div class="kpi2"><div class="v" id="kDraws">0</div><div class="k">Winners</div></div>
+        </div>
+        <button class="btn sm" id="editBtn" style="justify-self:start">← Edit names &amp; prizes</button>
+        <div class="box">
+          <h3>🏆 Winners <span class="ct" id="winCt">0</span></h3>
+          <ol class="list2" id="winList"></ol>
+          <div class="sbtns"><button class="btn sm" id="csvBtn">Download CSV</button><button class="btn sm" id="copyBtn">Copy list</button></div>
+        </div>
+        <div class="box">
+          <h3>🎁 Prizes <span class="ct" id="prizeCt">0</span></h3>
+          <ul class="list2" id="prizeList"></ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <p class="note2">Fair draw: every ticket has the same chance, using your browser's cryptographic random generator. Names, prizes and winners are only stored in this browser (so a reload doesn't lose your draw) and are never sent anywhere.</p>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>FRAG//V · Coded by <span class="gn">Gnarw</span></span>
+    <span class="sp"></span>
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+  </div>
+</footer>
+
+<canvas id="confetti"></canvas>
+<div class="toast2" id="toast"></div>
+<div class="modal2" id="modal"><div class="card"><h3 id="mTitle">Are you sure?</h3><p id="mText"></p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn sm" id="mNo">Cancel</button><button class="btn sm primary" id="mYes">Yes</button></div></div></div>
+
+<script src="config.js"></script>
+<script>
+/* Download button (same as the home page): newest installer from GitHub Releases, fetched only on click */
+(function () {
+  const cfg = window.FRAGV_CONFIG || {}; const page = `https://github.com/${cfg.GITHUB_OWNER}/${cfg.GITHUB_REPO}/releases/latest`;
+  document.querySelectorAll('[data-dl]').forEach((a) => {
+    a.href = page;
+    a.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const r = await fetch(`https://api.github.com/repos/${cfg.GITHUB_OWNER}/${cfg.GITHUB_REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } });
+        const exe = r.ok && ((await r.json()).assets || []).find((x) => /\.exe$/i.test(x.name));
+        location.href = exe ? exe.browser_download_url : page;
+      } catch (_) { location.href = page; }
+    });
+  });
+})();
+</script>
+<script>
+(function () {
+'use strict';
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const MAX_TICKETS = 150;
+const KEY = 'fragv.wheel.v1';
+const PALETTE = ['#ff2d78', '#2a2a44', '#b537f2', '#e9e6f5', '#ff7ab0', '#3b2f6b', '#7c4dff', '#1d1d30', '#ff4d5e', '#c9c3e6', '#9b2fd1', '#26263c'];
+
+/* fair random integer in [0, n) */
+function rnd(n) {
+  if (n <= 1) return 0;
+  const lim = Math.floor(4294967296 / n) * n; const a = new Uint32Array(1);
+  do { crypto.getRandomValues(a); } while (a[0] >= lim);
+  return a[0] % n;
+}
+const rndF = () => rnd(1e9) / 1e9;
+
+/* ---------- storage (works without localStorage too) ---------- */
+const store = (() => { let ok = true; try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); } catch (_) { ok = false; } const mem = {};
+  return { get: (k) => { try { return ok ? localStorage.getItem(k) : mem[k] || null; } catch (_) { return mem[k] || null; } }, set: (k, v) => { try { if (ok) localStorage.setItem(k, v); else mem[k] = v; } catch (_) { mem[k] = v; } } }; })();
+let S = { namesText: '', prizesText: '', participants: [], prizes: [], history: [], started: false };
+try { const d = JSON.parse(store.get(KEY) || 'null'); if (d) S = Object.assign(S, d); } catch (_) {}
+const save = () => store.set(KEY, JSON.stringify(S));
+
+/* ---------- toast / confirm ---------- */
+let tT; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(tT); tT = setTimeout(() => t.classList.remove('show'), 2600); }
+let mCb = null;
+function ask(title, text, yes, cb) { $('#mTitle').textContent = title; $('#mText').textContent = text; $('#mYes').textContent = yes; mCb = cb; $('#modal').classList.add('show'); }
+$('#mNo').onclick = () => { $('#modal').classList.remove('show'); mCb = null; };
+$('#mYes').onclick = () => { $('#modal').classList.remove('show'); const c = mCb; mCb = null; if (c) c(); };
+$('#modal').onclick = (e) => { if (e.target.id === 'modal') $('#mNo').click(); };
+
+/* ---------- parsing ---------- */
+function parseNames(text) {
+  const map = new Map(); let capped = 0; let lines = 0;
+  for (const raw of String(text).split(/\r?\n/)) {
+    const l = raw.trim(); if (!l) continue; lines += 1;
+    const m = l.match(/^(.*?)[\s]*[,;:=|\t]\s*(\d+)\s*$/) || l.match(/^(.*?)\s+(\d+)\s*$/) || l.match(/^(.*?)\s*[x×]\s*(\d+)\s*$/i);
+    let name = (m ? m[1] : l).trim().slice(0, 40); let t = m ? parseInt(m[2], 10) : 1;
+    if (!name) continue;
+    if (!(t >= 1)) t = 1;
+    const key = name.toLowerCase();
+    const cur = map.get(key) || { name, tickets: 0 };
+    cur.tickets += t;
+    if (cur.tickets > MAX_TICKETS) { cur.tickets = MAX_TICKETS; capped += 1; }
+    map.set(key, cur);
+  }
+  const list = [...map.values()];
+  return { list, capped, merged: lines - list.length, total: list.reduce((a, p) => a + p.tickets, 0) };
+}
+function parsePrizes(text) {
+  const out = [];
+  for (const raw of String(text).split(/\r?\n/)) {
+    const l = raw.trim(); if (!l) continue;
+    const m = l.match(/^(\d{1,3})\s*[x×]\s+(.+)$/i);
+    const n = m ? Math.min(100, parseInt(m[1], 10)) : 1; const name = (m ? m[2] : l).trim().slice(0, 80);
+    for (let i = 0; i < n; i += 1) out.push(name);
+  }
+  return out;
+}
+
+/* ---------- setup view ---------- */
+function setupMeta() {
+  const n = parseNames($('#inNames').value); const p = parsePrizes($('#inPrizes').value);
+  $('#namesMeta').innerHTML = `<span class="chip2"><b>${n.list.length}</b> names</span><span class="chip2"><b>${n.total}</b> tickets</span>` +
+    (n.merged > 0 ? `<span class="chip2">${n.merged} duplicate line${n.merged === 1 ? '' : 's'} added together</span>` : '') +
+    (n.capped ? `<span class="chip2 warn2">capped at ${MAX_TICKETS} tickets: ${n.capped}×</span>` : '');
+  $('#prizesMeta').innerHTML = `<span class="chip2"><b>${p.length}</b> prize${p.length === 1 ? '' : 's'}</span>` +
+    (p.length && n.total && p.length > n.total ? `<span class="chip2 warn2">more prizes than tickets: ${p.length - n.total} will stay unclaimed</span>` : '');
+  const ok = n.total >= 2 && p.length >= 1;
+  $('#startBtn').disabled = !ok;
+  $('#readyInfo').innerHTML = ok ? `<b>${n.list.length}</b> players · <b>${n.total}</b> tickets (= fields on the wheel) · <b>${p.length}</b> prizes` : 'Enter at least 2 tickets and 1 prize.';
+  $('#st1').classList.toggle('done', n.total >= 2); $('#st2').classList.toggle('on', n.total >= 2); $('#st2').classList.toggle('done', p.length >= 1);
+  S.namesText = $('#inNames').value; S.prizesText = $('#inPrizes').value; save();
+}
+$('#inNames').addEventListener('input', setupMeta);
+$('#inPrizes').addEventListener('input', setupMeta);
+$('#clearBtn').onclick = () => ask('Clear both fields?', 'All names, tickets and prizes you typed will be removed.', 'Clear', () => { $('#inNames').value = ''; $('#inPrizes').value = ''; setupMeta(); });
+
+$('#startBtn').onclick = () => {
+  const n = parseNames($('#inNames').value); const p = parsePrizes($('#inPrizes').value);
+  S.participants = n.list.map((x, i) => ({ id: 'p' + i + '_' + Date.now().toString(36), name: x.name, tickets: x.tickets, bought: x.tickets, color: i }));
+  S.prizes = p.map((name, i) => ({ id: 'g' + i, name, taken: false, wonBy: null }));
+  S.history = []; S.started = true; save();
+  rotation = 0; showDraw();
+};
+
+function showSetup() {
+  $('#viewDraw').classList.add('hidden'); $('#viewSetup').classList.remove('hidden'); document.body.classList.remove('drawing');
+  $('#st3').classList.remove('on');
+  $('#inNames').value = S.namesText || ''; $('#inPrizes').value = S.prizesText || '';
+  const open = S.started && S.history.length >= 0 && S.participants.length;
+  $('#resumeBox').classList.toggle('hidden', !open);
+  if (open) $('#resumeInfo').textContent = `· ${S.history.length} winner${S.history.length === 1 ? '' : 's'} drawn, ${ticketsLeft()} tickets and ${prizesLeft()} prizes left. Starting again from these fields begins a new draw.`;
+  setupMeta();
+}
+function showDraw() {
+  $('#viewSetup').classList.add('hidden'); $('#viewDraw').classList.remove('hidden'); document.body.classList.add('drawing');
+  ['#st1', '#st2'].forEach((s) => { $(s).classList.add('on', 'done'); }); $('#st3').classList.add('on');
+  resetSpinUI(); renderAll();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('#editBtn').onclick = () => { if (phase === 'spinning' || phase === 'revealing') return toast('The wheel is still spinning…'); if (phase === 'result') commit(); showSetup(); };
+$('#resumeBtn').onclick = showDraw;
+$('#resetAllBtn').onclick = () => ask('Start over?', 'The unfinished draw and its winners list will be deleted. Your typed names and prizes stay in the fields.', 'Start over', () => { S.participants = []; S.prizes = []; S.history = []; S.started = false; save(); showSetup(); });
+
+/* ---------- draw state ---------- */
+// one field per ticket, dealt round-robin so the players' colours alternate around the wheel
+// (the order doesn't change anyone's chance: every field is equally likely)
+const fields = () => {
+  const f = []; const left = S.participants.map((p) => p.tickets); let more = true;
+  for (let round = 0; more; round += 1) {
+    more = false;
+    S.participants.forEach((p, i) => { if (left[i] > round) { f.push({ pid: p.id, name: p.name, color: PALETTE[p.color % PALETTE.length] }); more = true; } });
+  }
+  return f;
+};
+const ticketsLeft = () => S.participants.reduce((a, p) => a + p.tickets, 0);
+const prizesLeft = () => S.prizes.filter((g) => !g.taken).length;
+
+/* ---------- wheel ---------- */
+let rotation = 0; const CX = 200, CY = 200, R = 186;
+const polar = (r, deg) => { const a = (deg - 90) * Math.PI / 180; return [CX + r * Math.cos(a), CY + r * Math.sin(a)]; };
+const lum = (h) => { const r = parseInt(h.substr(1, 2), 16) / 255, g = parseInt(h.substr(3, 2), 16) / 255, b = parseInt(h.substr(5, 2), 16) / 255; return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+function renderWheel() {
+  const f = fields(); const n = f.length; let segs = '', labels = '';
+  if (n) {
+    const seg = 360 / n; const showLabels = seg >= 4.2;
+    const fs = Math.max(6.5, Math.min(15, seg * 0.62)); const maxC = Math.max(3, Math.floor((R * 0.62) / (fs * 0.56)));
+    f.forEach((x, i) => {
+      const a0 = i * seg, a1 = (i + 1) * seg; const txt = lum(x.color) < 0.5 ? '#ffffff' : '#14141f';
+      if (n === 1) segs += `<circle cx="${CX}" cy="${CY}" r="${R}" fill="${x.color}"/>`;
+      else {
+        const p0 = polar(R, a0), p1 = polar(R, a1);
+        segs += `<path d="M${CX} ${CY}L${p0[0].toFixed(2)} ${p0[1].toFixed(2)}A${R} ${R} 0 ${seg > 180 ? 1 : 0} 1 ${p1[0].toFixed(2)} ${p1[1].toFixed(2)}Z" fill="${x.color}" stroke="#07070c" stroke-width="${n > 300 ? 0.3 : 1}"><title>${esc(x.name)}</title></path>`;
+      }
+      if (n === 1) labels += `<text x="200" y="140" font-size="18" font-weight="800" fill="${txt}" text-anchor="middle">${esc(x.name)}</text>`;
+      else if (showLabels) {
+        const mid = a0 + seg / 2; const pt = polar(R * 0.31, mid); let l = x.name; if (l.length > maxC) l = l.slice(0, Math.max(1, maxC - 1)) + '…';
+        labels += `<text x="${pt[0].toFixed(2)}" y="${pt[1].toFixed(2)}" font-size="${fs.toFixed(1)}" font-weight="700" fill="${txt}" dominant-baseline="middle" transform="rotate(${(mid - 90).toFixed(2)} ${pt[0].toFixed(2)} ${pt[1].toFixed(2)})" style="pointer-events:none;font-family:Segoe UI,system-ui,sans-serif">${esc(l)}</text>`;
+      }
+    });
+  } else {
+    segs = `<circle cx="200" cy="200" r="${R}" fill="#12121c"/><text x="200" y="128" text-anchor="middle" fill="#9a97b6" font-size="13" font-weight="700" letter-spacing="1.5">NO TICKETS LEFT</text>`;
+  }
+  const dots = Array.from({ length: 24 }, (_, i) => { const p = polar(193.5, i * 15); return `<circle cx="${p[0].toFixed(2)}" cy="${p[1].toFixed(2)}" r="2" fill="${i % 2 ? '#b537f2' : '#ff2d78'}"/>`; }).join('');
+  $('#wheel').innerHTML =
+    `<defs><linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff2d78"/><stop offset="1" stop-color="#b537f2"/></linearGradient></defs>` +
+    `<circle cx="200" cy="200" r="198" fill="#11111b" stroke="url(#rim)" stroke-width="2.5"/>${dots}` +
+    `<g id="wg" style="transform-box:view-box;transform-origin:50% 50%;transform:rotate(${rotation}deg)">${segs}${labels}</g>` +
+    `<circle cx="200" cy="200" r="187" fill="none" stroke="#07070c" stroke-width="2.5"/>` +
+    `<path d="M200 34 L186 8 L214 8 Z" fill="#ff2d78" stroke="#07070c" stroke-width="2" stroke-linejoin="round"/>`;
+}
+function rotate(anim) { const g = $('#wg'); if (!g) return; g.style.transition = anim || 'none'; g.style.transform = `rotate(${rotation}deg)`; }
+
+/* ---------- lists ---------- */
+function renderAll() {
+  renderWheel();
+  $('#kPlayers').textContent = S.participants.filter((p) => p.tickets > 0).length;
+  $('#kTickets').textContent = ticketsLeft(); $('#kPrizes').textContent = prizesLeft(); $('#kDraws').textContent = S.history.length;
+  $('#winCt').textContent = S.history.length;
+  $('#winList').innerHTML = S.history.length ? S.history.map((h, i) => `<li><span class="no">${i + 1}</span><span class="n">${esc(h.name)}</span><span class="p">${esc(h.prize)}</span></li>`).join('') : '<li class="empty">No winners yet</li>';
+  $('#prizeCt').textContent = `${prizesLeft()} / ${S.prizes.length}`;
+  $('#prizeList').innerHTML = S.prizes.length ? S.prizes.map((g) => `<li class="${g.taken ? 'taken' : ''}"><span class="n">${esc(g.name)}</span><span class="p">${g.taken ? esc(g.wonBy) : ''}</span></li>`).join('') : '<li class="empty">No prizes</li>';
+}
+
+/* ---------- spinning ---------- */
+let phase = 'idle'; let pending = null;
+$('#spinBtn').onclick = () => { if (phase === 'spinning' || phase === 'revealing') return; if (phase === 'result') { commit(); return; } spin(); };
+function spin() {
+  const f = fields();
+  if (!prizesLeft()) return toast('All prizes are drawn');
+  if (f.length < 1) return toast('No tickets left on the wheel');
+  phase = 'spinning'; banner('idle');
+  const b = $('#spinBtn'); b.disabled = true; b.textContent = '…';
+  $('#nextBtn').classList.add('hidden'); $('#redrawBtn').classList.add('hidden');
+  const idx = rnd(f.length); const seg = 360 / f.length;
+  const off = (rndF() - 0.5) * seg * 0.7; const turns = 6 + rnd(3);
+  const want = -((idx + 0.5) * seg + off); const cur = ((rotation % 360) + 360) % 360;
+  const delta = ((want - cur) % 360 + 360) % 360; const dur = 5200 + rnd(1400);
+  rotation += turns * 360 + delta;
+  rotate(`transform ${dur}ms cubic-bezier(.12,.72,.05,1)`);
+  setTimeout(() => landed(f[idx]), dur + 80);
+}
+function landed(field) {
+  const p = S.participants.find((x) => x.id === field.pid);
+  phase = 'revealing'; pending = { pid: p.id, name: p.name, prize: null };
+  banner('win', 'Winner', p.name, '');
+  rollPrize();
+}
+function rollPrize() {
+  const free = S.prizes.filter((g) => !g.taken);
+  const chosen = free[rnd(free.length)]; const el = $('#bPrize'); el.classList.add('rolling');
+  let delay = 45, total = 0;
+  (function step() {
+    el.textContent = '🎁 ' + free[rnd(free.length)].name; total += delay; delay = Math.min(230, delay * 1.14);
+    if (total < 1600) setTimeout(step, delay);
+    else { el.classList.remove('rolling'); el.textContent = '🎁 ' + chosen.name; pending.prize = chosen; result(); }
+  })();
+}
+function result() {
+  phase = 'result';
+  const b = $('#spinBtn'); b.disabled = false; b.textContent = 'OK ✓'; b.classList.add('done');
+  $('#nextBtn').classList.remove('hidden'); $('#redrawBtn').classList.toggle('hidden', prizesLeft() < 2);
+  try { confetti(); } catch (_) {}
+}
+function commit() {
+  if (phase !== 'result' || !pending) return false;
+  const p = S.participants.find((x) => x.id === pending.pid); const g = S.prizes.find((x) => x.id === pending.prize.id);
+  g.taken = true; g.wonBy = pending.name; p.tickets = Math.max(0, p.tickets - 1);
+  S.history.push({ ts: Date.now(), name: pending.name, prize: g.name });
+  save(); pending = null; resetSpinUI(); renderAll();
+  if (!prizesLeft() || !ticketsLeft()) {
+    banner('idle', '🏁 Draw finished', !prizesLeft() ? 'All prizes drawn' : 'All tickets drawn', `${S.history.length} winner${S.history.length === 1 ? '' : 's'}`);
+    const b = $('#spinBtn'); b.disabled = true; b.textContent = 'END';
+  }
+  return true;
+}
+$('#nextBtn').onclick = () => { if (commit() && prizesLeft() && ticketsLeft()) setTimeout(spin, 350); };
+$('#redrawBtn').onclick = () => { if (phase !== 'result' || !pending) return; phase = 'revealing'; $('#nextBtn').classList.add('hidden'); $('#redrawBtn').classList.add('hidden'); rollPrize(); };
+function banner(kind, lbl, name, prize) {
+  const b = $('#banner'); b.classList.toggle('win', kind === 'win');
+  $('#bLbl').textContent = lbl || 'Ready to draw'; $('#bName').textContent = name || 'Good luck!'; $('#bPrize').textContent = prize != null ? prize : 'Click SPIN';
+}
+function resetSpinUI() {
+  phase = 'idle'; const b = $('#spinBtn'); b.disabled = false; b.textContent = 'SPIN'; b.classList.remove('done');
+  $('#nextBtn').classList.add('hidden'); $('#redrawBtn').classList.add('hidden'); banner('idle');
+  if (S.started && (!prizesLeft() || !ticketsLeft())) { b.disabled = true; b.textContent = 'END'; banner('idle', '🏁 Draw finished', !prizesLeft() ? 'All prizes drawn' : 'All tickets drawn', `${S.history.length} winners`); }
+}
+
+/* ---------- export ---------- */
+const listText = () => S.history.map((h, i) => `${i + 1}. ${h.name} – ${h.prize}`).join('\n');
+$('#copyBtn').onclick = async () => { if (!S.history.length) return toast('No winners yet'); try { await navigator.clipboard.writeText(listText()); toast('Winners list copied'); } catch (_) { toast('Copy not allowed in this browser'); } };
+$('#csvBtn').onclick = () => {
+  if (!S.history.length) return toast('No winners yet');
+  const q = (v) => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = '﻿' + ['No;Time;Name;Prize', ...S.history.map((h, i) => [i + 1, new Date(h.ts).toLocaleString(), h.name, h.prize].map(q).join(';'))].join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = `lucky-wheel-winners-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+};
+
+/* ---------- confetti ---------- */
+const cv = $('#confetti'); const cx = cv.getContext('2d'); let parts = [], raf = null;
+const size = () => { cv.width = innerWidth; cv.height = innerHeight; }; addEventListener('resize', size); size();
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cols = ['#ff2d78', '#b537f2', '#ffffff', '#ff7ab0', '#7c4dff'];
+  for (let i = 0; i < 160; i += 1) parts.push({ x: rndF() * cv.width, y: -20 - rndF() * cv.height * 0.4, w: 5 + rndF() * 7, h: 8 + rndF() * 8, vy: 2 + rndF() * 3.6, vx: -1.4 + rndF() * 2.8, r: rndF() * 6, vr: -0.14 + rndF() * 0.28, c: cols[rnd(cols.length)] });
+  if (!raf) loop();
+}
+function loop() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter((p) => p.y < cv.height + 30);
+  for (const p of parts) { p.x += p.vx; p.y += p.vy; p.r += p.vr; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore(); }
+  raf = parts.length ? requestAnimationFrame(loop) : (cx.clearRect(0, 0, cv.width, cv.height), null);
+}
+
+/* ---------- start ---------- */
+showSetup(); // always start on the entry fields; an unfinished draw can be resumed from the banner
+})();
+</script>
+</body>
+</html>
