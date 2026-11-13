@@ -80,6 +80,12 @@
   .list2 li .p{color:var(--muted);font-size:13px;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .list2 li .no{font:700 11px var(--mono);color:var(--dim);width:22px}
   .list2 li.taken{opacity:.45;text-decoration:line-through}
+  .sw{flex:none;width:14px;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+  .players li .t{font:700 12px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}
+  .players li .t small{color:var(--dim);font-weight:600}
+  .players li.out{opacity:.4}
+  .players li.hit{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 0 18px -4px var(--acc);animation:hit 1.2s ease-out}
+  @keyframes hit{0%{transform:scale(1.04)}100%{transform:none}}
   .list2 .empty{color:var(--dim);background:none;border-style:dashed;justify-content:center}
   .side h3{font:800 16px/1.2 var(--display);margin:0 0 10px;display:flex;align-items:center;gap:8px}
   .side h3 .ct{margin-left:auto;font:700 12px var(--mono);color:var(--dim)}
@@ -177,6 +183,10 @@
         </div>
         <button class="btn sm" id="editBtn" style="justify-self:start">← Edit names &amp; prizes</button>
         <div class="box">
+          <h3>👥 Players <span class="ct" id="plCt">0</span></h3>
+          <ul class="list2 players" id="playerList"></ul>
+        </div>
+        <div class="box">
           <h3>🏆 Winners <span class="ct" id="winCt">0</span></h3>
           <ol class="list2" id="winList"></ol>
           <div class="sbtns"><button class="btn sm" id="csvBtn">Download CSV</button><button class="btn sm" id="copyBtn">Copy list</button></div>
@@ -230,7 +240,39 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const MAX_TICKETS = 150;
 const KEY = 'fragv.wheel.v1';
-const PALETTE = ['#ff2d78', '#2a2a44', '#b537f2', '#e9e6f5', '#ff7ab0', '#3b2f6b', '#7c4dff', '#1d1d30', '#ff4d5e', '#c9c3e6', '#9b2fd1', '#26263c'];
+/* One colour per player, never repeated: every new player gets the candidate colour that is furthest away from all
+   colours handed out so far (farthest-point sampling in a perceptual colour space), so even with hundreds of names
+   no two players look alike. Deterministic: the same order of names always gives the same colours. */
+const colourList = [];
+let colourPool = null;
+function hslHex(h, s, l) {
+  const k = (n) => (n + h / 30) % 12; const a = s * Math.min(l, 1 - l);
+  const f = (n) => Math.round(255 * (l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))));
+  return '#' + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+function lab(hex) { // sRGB → CIELAB (D65)
+  const c = [1, 3, 5].map((k) => { const v = parseInt(hex.substr(k, 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+  const x = (c[0] * 0.4124 + c[1] * 0.3576 + c[2] * 0.1805) / 0.95047, y = c[0] * 0.2126 + c[1] * 0.7152 + c[2] * 0.0722, z = (c[0] * 0.0193 + c[1] * 0.1192 + c[2] * 0.9505) / 1.08883;
+  const g = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+  return [116 * g(y) - 16, 500 * (g(x) - g(y)), 200 * (g(y) - g(z))];
+}
+function playerColour(i) {
+  if (!colourPool) {
+    colourPool = [];
+    for (let h = 0; h < 360; h += 5) for (const sat of [0.95, 0.75, 0.55]) for (const l of [0.36, 0.46, 0.56, 0.66, 0.76]) { const hex = hslHex(h, sat, l); colourPool.push({ hex, lab: lab(hex), d: Infinity }); }
+    // start with the FRAG//V pink
+    const first = colourPool.reduce((b, c) => (Math.abs(parseInt(c.hex.substr(1, 2), 16) - 255) + parseInt(c.hex.substr(3, 2), 16) < Math.abs(parseInt(b.hex.substr(1, 2), 16) - 255) + parseInt(b.hex.substr(3, 2), 16) && c.hex.substr(5, 2) > '60' ? c : b));
+    colourPool = colourPool.filter((c) => c !== first); colourList.push(first.hex);
+    colourPool.forEach((c) => { c.d = dist(c.lab, first.lab); });
+  }
+  while (colourList.length <= i && colourPool.length) {
+    let bi = 0; for (let k = 1; k < colourPool.length; k += 1) if (colourPool[k].d > colourPool[bi].d) bi = k;
+    const pick = colourPool.splice(bi, 1)[0]; colourList.push(pick.hex);
+    colourPool.forEach((c) => { const d = dist(c.lab, pick.lab); if (d < c.d) c.d = d; });
+  }
+  return colourList[i] || hslHex((i * 137.508) % 360, 0.7, 0.5);
+}
+function dist(a, b) { return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); }
 
 /* fair random integer in [0, n) */
 function rnd(n) {
@@ -337,7 +379,7 @@ const fields = () => {
   const f = []; const left = S.participants.map((p) => p.tickets); let more = true;
   for (let round = 0; more; round += 1) {
     more = false;
-    S.participants.forEach((p, i) => { if (left[i] > round) { f.push({ pid: p.id, name: p.name, color: PALETTE[p.color % PALETTE.length] }); more = true; } });
+    S.participants.forEach((p, i) => { if (left[i] > round) { f.push({ pid: p.id, name: p.name, color: playerColour(p.color) }); more = true; } });
   }
   return f;
 };
@@ -384,10 +426,27 @@ function renderAll() {
   renderWheel();
   $('#kPlayers').textContent = S.participants.filter((p) => p.tickets > 0).length;
   $('#kTickets').textContent = ticketsLeft(); $('#kPrizes').textContent = prizesLeft(); $('#kDraws').textContent = S.history.length;
+  const tot = ticketsLeft();
+  $('#plCt').textContent = S.participants.length;
+  $('#playerList').innerHTML = S.participants.length ? S.participants.map((p) => {
+    const pct = tot && p.tickets ? (p.tickets / tot) * 100 : 0;
+    return `<li class="${p.tickets ? '' : 'out'}${pending && pending.pid === p.id ? ' hit' : ''}" title="${esc(p.name)}: ${p.tickets} of ${p.bought} tickets left, ${pct.toFixed(1)} % chance per spin">` +
+      `<span class="sw" style="background:${playerColour(p.color)}"></span><span class="n">${esc(p.name)}</span>` +
+      `<span class="t">${p.tickets}<small>/${p.bought}</small> · ${pct >= 10 ? pct.toFixed(0) : pct.toFixed(1)}%</span></li>`;
+  }).join('') : '<li class="empty">No players</li>';
   $('#winCt').textContent = S.history.length;
-  $('#winList').innerHTML = S.history.length ? S.history.map((h, i) => `<li><span class="no">${i + 1}</span><span class="n">${esc(h.name)}</span><span class="p">${esc(h.prize)}</span></li>`).join('') : '<li class="empty">No winners yet</li>';
+  const colOf = (name) => { const p = S.participants.find((x) => x.name === name); return p ? playerColour(p.color) : '#555'; };
+  $('#winList').innerHTML = S.history.length ? S.history.map((h, i) => `<li><span class="no">${i + 1}</span><span class="sw" style="background:${colOf(h.name)}"></span><span class="n">${esc(h.name)}</span><span class="p">${esc(h.prize)}</span></li>`).join('') : '<li class="empty">No winners yet</li>';
   $('#prizeCt').textContent = `${prizesLeft()} / ${S.prizes.length}`;
   $('#prizeList').innerHTML = S.prizes.length ? S.prizes.map((g) => `<li class="${g.taken ? 'taken' : ''}"><span class="n">${esc(g.name)}</span><span class="p">${g.taken ? esc(g.wonBy) : ''}</span></li>`).join('') : '<li class="empty">No prizes</li>';
+}
+
+function renderPlayersOnly() {
+  const ul = $('#playerList'); if (!ul || !pending) return;
+  const i = S.participants.findIndex((p) => p.id === pending.pid);
+  const li = ul.children[i]; if (!li) return;
+  ul.querySelectorAll('.hit').forEach((x) => x.classList.remove('hit'));
+  li.classList.add('hit'); li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 /* ---------- spinning ---------- */
@@ -412,6 +471,7 @@ function landed(field) {
   const p = S.participants.find((x) => x.id === field.pid);
   phase = 'revealing'; pending = { pid: p.id, name: p.name, prize: null };
   banner('win', 'Winner', p.name, '');
+  renderPlayersOnly();
   rollPrize();
 }
 function rollPrize() {
